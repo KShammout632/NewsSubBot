@@ -5,10 +5,10 @@ import time
 from bs4 import BeautifulSoup
 import json
 
-consumer_key = 'V7wULbT8uiX2uWPiZOoxk2A8K'
-consumer_secret = 'tEt5viQLcc4ZLZaLzPAr4ZZt0TJ9SqxFp8qF0FpfXVFIrPgRRh'
-access_token = '2239643439-JuTlUGNiZyowncZGf9Pv7DrFPXqtJyjR1ziLEAK'
-access_token_secret = 'Nf3hse6f8QCl8zckNLo7vR5pNxiU7MVD3xSt58I9HNZL5'
+consumer_key = 'xxxx'
+consumer_secret = 'xxxx'
+access_token = 'xxxx'
+access_token_secret = 'xxxx'
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
