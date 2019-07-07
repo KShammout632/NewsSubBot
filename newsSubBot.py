@@ -74,7 +74,7 @@ def tweetOut(header,key):
     valLen = len(val)
     outT = desc[:ind] + val + desc[ind+valLen:]
     print(outT)
-    #API.update_status(outT)
+    API.update_status("From BBC: " + outT)
     #print("Original article: " + str(link))
 
 def getMatchingWord(s):
