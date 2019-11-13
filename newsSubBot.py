@@ -4,18 +4,8 @@ import urllib.request
 import time
 from bs4 import BeautifulSoup
 import json
+import config
 
-consumer_key = 'xxxx'
-consumer_secret = 'xxxx'
-access_token = 'xxxx'
-access_token_secret = 'xxxx'
-
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
-
-user = api.me()
-print(user.name)
 
 def retweet5():
     search = "nature"
@@ -39,8 +29,51 @@ def printFavs():
         except StopIteration:
             break
 
+def getHeaderBBC():
+    desc = ""
+    link = ""
+    with open('visited.txt','r') as f:
+        visited = f.read()
+    allHeaders = soup.find_all("a", class_="gs-c-promo-heading gs-o-faux-block-link__overlay-link gel-pica-bold nw-o-link-split__anchor")
+    for header in allHeaders:
+        desc = header.string
+        if(desc != None):
+            desc = desc.lower()
+            (key,val) = getMatchingWord(desc)
+            if(val != ""):
+                newDesc = desc.replace(key, val)
+                print(newDesc)
+                link = "https://www.bbc.com" + header['href']
+                print(link)
+                if(link not in visited):
+                    print("tweet")
+                    tweetOut(newDesc,link)
+                    break
 
-#url = 'http://web.mta.info/developers/turnstile.html'
+
+
+def tweetOut(desc,link):
+    with open('temp.txt', 'w') as f:
+        f.write("From BBC: " + desc + "\n " + link)
+
+    with open('temp.txt','r') as f:
+        api.update_status(f.read())
+
+    open('temp.txt', 'w').close()
+
+    with open('visited.txt', 'a') as f:
+        f.write(link + "\n")
+
+
+def getMatchingWord(s):
+    for p in data:
+        if(p in s):
+            return (p,data.get(p))
+    return ("","")
+
+def main():
+    getHeaderBBC()
+
 url = 'https://www.bbc.com/news/world'
 response = requests.get(url)
 soup = BeautifulSoup(response.text, "html.parser")
@@ -48,45 +81,12 @@ soup = BeautifulSoup(response.text, "html.parser")
 with open('newsSub.json', 'r') as json_file:
     data = json.load(json_file)
 
-def getHeader():
-    desc = ""
-    link = ""
-    s1 = soup.find("a", class_="gs-c-promo-heading gs-o-faux-block-link__overlay-link gel-pica-bold nw-o-link-split__anchor")
-    allHeaders = soup.find_all("a", class_="gs-c-promo-heading gs-o-faux-block-link__overlay-link gel-pica-bold nw-o-link-split__anchor")
-    for header in allHeaders:
-        desc = header.string
-        #desc = "rebuild"
-        if(desc != None):
-            (key,val) = getMatchingWord(desc)
-        if(desc != None and val != ""):
-            print("Title of article: " + desc)
-            #print(getMatchingWord(desc))
-            tweetOut(header,key)
-            break
+auth = tweepy.OAuthHandler(config.consumer_key, config.consumer_secret)
+auth.set_access_token(config.access_token, config.access_token_secret)
+api = tweepy.API(auth)
 
-def tweetOut(header,key):
-    desc = header.string
-    prevLink = header.find_parents("a")
-    print(prevLink)
-    #link = prevLink.href
-    ind = desc.index(key)
-    val = data.get(key)
-    valLen = len(val)
-    outT = desc[:ind] + val + desc[ind+valLen:]
-    print(outT)
-    API.update_status("From BBC: " + outT)
-    #print("Original article: " + str(link))
-
-def getMatchingWord(s):
-    for p in data:
-        if(p in s):
-            return (p,data.get(p))
-    #json_file = None
-    return ("","")
-
-def main():
-    (x,y) = getMatchingWord("rebuild")
-    print(x,y)
-    getHeader()
+user = api.me()
+print(user.name)
+print("logged in!")
 
 main()
